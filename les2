@@ -1,0 +1,57 @@
+// les3.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+
+int main()
+{
+	unsigned int n = 0;
+	std::cout << "n = ";
+	std::cin >> n;
+
+	unsigned int summ = 0;
+	unsigned int prod = 1;
+	unsigned int tmp = n;
+	while (tmp)
+	{
+		summ += tmp % 10;
+		prod *= tmp % 10;
+		tmp /= 10;
+	}
+
+	std::cout << "Summ of digits: " << summ << std::endl;
+
+	std::cout << "Product of digits: " << prod << std::endl;
+
+
+
+	unsigned int shift = 1;
+	while (shift<=n && shift!=0)
+	{
+		shift <<= 1; // *= 2;
+
+	}
+	if (shift == 0)
+	{
+		std::cout << 1;
+		tmp = n - shift;
+	}
+	else
+	{
+		tmp = n;
+	}
+	shift >>= 1; // /= 2;
+
+	while (shift)
+	{
+		std::cout << tmp / shift;
+		tmp %= shift;
+		shift >>= 1; // /= 2;
+
+	}
+	std::cout << std::endl;
+
+    return 0;
+}
+
