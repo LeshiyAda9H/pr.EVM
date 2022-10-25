@@ -1,0 +1,48 @@
+
+
+#include "stdafx.h"
+#include <iostream>
+
+int main()
+{
+	double x1, x2, dx;
+	do {
+		std::cout << "x_1 = ";
+		std::cin >> x1;
+	} while (x1<=0 || x1>2 );
+
+	do {
+		std::cout << "x_2 = ";
+		std::cin >> x2;
+	} while (x2 <= 0 || x2>2);
+
+	do {
+		std::cout << "dx = ";
+		std::cin >> dx;
+	} while (dx <= 0);
+
+	double epsilon = 0.0;
+	std::cout << "e = ";
+	std::cin >> epsilon;
+
+	while (x1 <= x2)
+	{
+		double x = x1;
+		int n = 0;
+		double an = x - 1.0;
+		double S = 0.0;
+		while (an > epsilon || an < -epsilon)
+		{
+			S += an;
+			an *= -(x - 1.0)*(n + 1) / (n + 2);
+			++n;
+		}
+		std::cout << x << "\t" << S << std::endl;
+
+		x1 += dx;
+	}
+	
+
+    return 0;
+}
+
