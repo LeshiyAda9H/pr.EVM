@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include <iostream>
 
+
+
 int main()
 {
 	//1) Задать степень полинома
@@ -27,27 +29,15 @@ int main()
 
 	//3) Вывести полином в консоль
 
-	for (int i = 0; i <deg +1; ++i)
-	{
-		if (polynom[i] == 0)
-			continue;
-		if (polynom[i]>0 && i>0)
-			std::cout << "+";
-
-		if (deg - i > 1)
-			std::cout << "x^" << (deg - i);
-		else if (deg - i > 0)
-			std::cout << "x";
-	}
-	std::cout << std::endl;
+	printPolynom(polynom, deg, "p(x) = ");
 
 
 	//4) Узнать точку в которой посчитать значение полинома
-
+	
 	int x0 = 0;
 	std::cout << " x_0 =";
 	std::cin >> x0;
-
+	
 	//5) Вычислить значение полинома в заданной точке 
 
 	int result = polynom[0];
@@ -60,5 +50,42 @@ int main()
 
 	delete[] polynom;
     return 0;
+
+}
+
+void printPolynom(int* polynom, int deg, const char* prefix="", int x0)
+{
+	std::cout << prefix << " ";
+	for (int i = 0; i <deg + 1; ++i)
+	{
+		if (polynom[i] == 0)
+			continue;
+		if (polynom[i]>0 && i>0)
+			std::cout << "+";
+		std::cout << polynom[i];
+
+		if (x0 == 0)
+		{
+			if (deg - i > 1)
+				std::cout << "x^" << (deg - i);
+			else if (deg - i > 0)
+				std::cout << "x";
+		}
+		else if (x0>0)
+		{
+			if (deg - i > 1)
+				std::cout << "(x-" << x0 << ") ^ " << (deg - i);
+			else if (deg - i > 0)
+				std::cout << "x-" << x0 <<")";
+		}
+		else
+		{
+			if (deg - i > 1)
+				std::cout << "(x+" << -x0 << ") ^ " << (deg - i);
+			else if (deg - i > 0)
+				std::cout << "x+" << -x0 << ")";
+		}
+	}
+	std::cout << std::endl;
 }
 
