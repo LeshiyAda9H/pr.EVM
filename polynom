@@ -1,0 +1,64 @@
+// les5.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+
+int main()
+{
+	//1) Задать степень полинома
+
+
+	int deg = 0;
+	do {
+		std::cout << "Degree of Polynom : ";
+		std::cin >> deg;
+	} while (deg<0);
+
+	//2) Узнать коэф полинома
+
+	int* polynom = new int[deg + 1];
+	//TODO ввод полинома
+	//Для тестирования заполним случйными значениями
+	for (int i = 0; i< deg+1; ++i)
+	{
+		polynom[i] = -10 + rand() % 21;
+	}
+
+	//3) Вывести полином в консоль
+
+	for (int i = 0; i <deg +1; ++i)
+	{
+		if (polynom[i] == 0)
+			continue;
+		if (polynom[i]>0 && i>0)
+			std::cout << "+";
+
+		if (deg - i > 1)
+			std::cout << "x^" << (deg - i);
+		else if (deg - i > 0)
+			std::cout << "x";
+	}
+	std::cout << std::endl;
+
+
+	//4) Узнать точку в которой посчитать значение полинома
+
+	int x0 = 0;
+	std::cout << " x_0 =";
+	std::cin >> x0;
+
+	//5) Вычислить значение полинома в заданной точке 
+
+	int result = polynom[0];
+	for (int i =1; i < deg + 1; ++i)
+	{
+		result = result * x0 + polynom[i];
+	}
+	std::cout << "p(x_0) = " << result << std::endl;
+
+
+	delete[] polynom;
+    return 0;
+}
+
