@@ -2,6 +2,7 @@
 
 #include "matrix.h"
 #include <iostream>
+#include <fstream>
 /*
 Создание матрицы заданной размерности. 
 Только выделение памяти.
@@ -113,3 +114,86 @@ double** linspace(int from, int to)
 	return M;
 }
 
+double** plusMatrix(double** A, double** B, int rows, int columns)
+{
+	double** C = createMatrix(rows, columns);
+	for (int row = 0; row < rows; ++row)
+	{
+		for (int col = 0; col < columns; ++col)
+		{
+			C[row][col] = A[row][col] + B[row][col];
+		}
+	}
+	return C;
+}
+
+double** mulMatrix(double** A, double B, int rows, int columns)
+{
+	double** C = createMatrix(rows, columns);
+	for (int row = 0; row < rows; ++row)
+	{
+		for (int col = 0; col < columns; ++col)
+		{
+			C[row][col] = B * A[row][col];
+		}
+	}
+	return C;
+}
+
+
+double** multMatrix(double** A, int rowsA, int columnsA,
+					double** B, int rowsB, int columnsB)
+{
+	if (columnsA !=columnsB)
+	{
+		throw "Multiplication: wrang matrix size";
+	}
+
+
+
+	double** C = zeros(rowsA, columnsB);
+	for (int rowA = 0; rowA < rowsA; ++rowA)
+	{
+		for (int colB = 0; colB < columnsB; ++colB)
+		{
+			for (int k = 0; k < columnsA; ++k)
+			{
+				C[rowA][colB] += A[rowA][k] * B[k][colB];
+			}
+		}
+	}
+	return C;
+}
+
+double** transpose(double** A, int rows, int columns)
+{
+	double** B = createMatrix(columns, rows);
+	for (int row = 0; row < rows; ++row)
+	{
+		for (int col = 0; col < columns; ++col)
+		{
+			B[col][row] = A[row][col];
+		}
+	}
+	return B;
+}
+	void saveMatrix(const char *fname, double** A, int rows, int columns)
+	{
+		std::ofstream outFile(fname);
+		if (!outFile)
+		{
+			throw "Can not write to file";
+		}
+		outFile << rows << " " << columns << std::endl;
+
+		for (int row = 0; row < rows; ++row)
+		{
+			for (int col = 0; col < columns; ++col)
+			{
+				outFile << A[row][col] << " ";
+			}
+			outFile << std::endl;
+		}
+
+		outFile.close();
+	}
