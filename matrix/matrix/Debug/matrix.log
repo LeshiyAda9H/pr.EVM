@@ -1,2 +1,3 @@
 ﻿  libmatix.cpp
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(227): warning C4715: 'minMatrix': not all control paths return a value
   matrix.vcxproj -> C:\Users\st107226\source\repos\matrix\Debug\matrix.exe

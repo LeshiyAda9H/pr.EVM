@@ -8,13 +8,17 @@
 Только выделение памяти.
 */
 
-double** createMatrix(int rows, int columns)
+Matrix createMatrix(int rows, int columns)
 {
-	double** M = new double*[rows];
+	Matrix M;
+	M.data = new double*[rows];
 	for (int row = 0; row < rows; ++row)
 	{
-		M[row] = new double[columns];
+		M.data[row] = new double[columns];
 	}
+	M.rows = rows;
+	M.columns = columns;
+
 	return M;
 }
 
@@ -24,82 +28,82 @@ double** createMatrix(int rows, int columns)
 Оставлено для унификации вызовов функций.
 */
 
-void deleteMatrix(double** &M, int rows, int columns)
+void deleteMatrix(Matrix & M)
 {
-	for (int row = 0; row < rows; ++row)
+	for (int row = 0; row < M.rows; ++row)
 	{
-		delete[] M[row];
+		delete[] M.data[row];
 	}
-	delete[] M;
-	M = nullptr;
+	delete[] M.data;
+	M.data = nullptr;
 }
-void inputMatrix(double** M, int rows, int columns)
+void inputMatrix(Matrix M)
 {
-	for (int row = 0; row < rows; ++row)
+	for (int row = 0; row < M.rows; ++row)
 	{
-		for (int col = 0; col < columns; ++col)
+		for (int col = 0; col < M.columns; ++col)
 		{
 			std::cout << "M(" << row + 1 << ", " << col + 1 << ") = ";
-			std::cin >> M[row][col];
+			std::cin >> M.data[row][col];
 		}
 	}
 }
-void printMatrix(double** M, int rows, int columns, const char* str)
+void printMatrix(const Matrix & M, const char* str)
 {
 	std::cout << str;
-	for (int row = 0; row < rows; ++row)
+	for (int row = 0; row < M.rows; ++row)
 	{
-		for (int col = 0; col < columns; ++col)
+		for (int col = 0; col < M.columns; ++col)
 		{
-			std::cout << M[row][col] << " ";
+			std::cout << M.data[row][col] << " ";
 		}
 		std::cout << std::endl;
 	}
 }
 
-double** zeros(int rows, int columns)
+Matrix zeros(int rows, int columns)
 {
-	double** M = createMatrix(rows, columns);
+	Matrix M = createMatrix(rows, columns);
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < columns; ++col)
 		{
-			M[row][col]=0.0;
+			M.data[row][col]=0.0;
 		}
 	}
 	return M;
 }
-double** ones(int rows, int columns)
+Matrix ones(int rows, int columns)
 {
-	double** M = createMatrix(rows, columns);
+	Matrix M = createMatrix(rows, columns);
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < columns; ++col)
 		{
-			M[row][col] = 1.0;
+			M.data[row][col] = 1.0;
 		}
 	}
 	return M;
 }
-double** eye(int size)
+Matrix eye(int size)
 {
-	double** M = zeros(size, size);
+	Matrix M = zeros(size, size);
 	for (int row = 0; row < size; ++row)
 	{
-		M[row][row] = 1.0;
+		M.data[row][row] = 1.0;
 	}
 	return M;
 }
-double** linspace(int from, int to)
+Matrix linspace(int from, int to)
 {
 	int size = (from > to) ? (from - to) : (to - from);
 	++size;
-	double** M = createMatrix(1, size);
+	Matrix M = createMatrix(1, size);
 	if (from < to)
 	{
 		for (int i=0; i < size; ++i)
 		{
-			M[0][i] = from;
+			M.data[0][i] = from;
 			++from;
 		}
 	}
@@ -107,93 +111,146 @@ double** linspace(int from, int to)
 	{
 		for (int i = 0; i < size; ++i)
 		{
-			M[0][i] = from;
+			M.data[0][i] = from;
 			--from;
 		}
 	}
 	return M;
 }
 
-double** plusMatrix(double** A, double** B, int rows, int columns)
+Matrix plusMatrix(const Matrix & A, const Matrix & B)
 {
-	double** C = createMatrix(rows, columns);
-	for (int row = 0; row < rows; ++row)
+	if (A.columns != B.columns)
 	{
-		for (int col = 0; col < columns; ++col)
+		throw "Plus matrix: wrong matrix size";
+	}
+	if (A.rows != B.rows)
+	{
+		throw "Plus matrix: wrong matrix size";
+	}
+	Matrix C = createMatrix(A.rows, A.columns);
+	for (int row = 0; row < A.rows; ++row)
+	{
+		for (int col = 0; col < A.columns; ++col)
 		{
-			C[row][col] = A[row][col] + B[row][col];
+			C.data[row][col] = A.data[row][col] + B.data[row][col];
 		}
 	}
 	return C;
 }
 
-double** mulMatrix(double** A, double B, int rows, int columns)
+Matrix mulMatrix(Matrix A, double B)
 {
-	double** C = createMatrix(rows, columns);
-	for (int row = 0; row < rows; ++row)
+	Matrix C = createMatrix(A.rows, A.columns);
+	for (int row = 0; row < A.rows; ++row)
 	{
-		for (int col = 0; col < columns; ++col)
+		for (int col = 0; col < A.columns; ++col)
 		{
-			C[row][col] = B * A[row][col];
+			C.data[row][col] = B * A.data[row][col];
 		}
 	}
 	return C;
 }
 
 
-double** multMatrix(double** A, int rowsA, int columnsA,
-					double** B, int rowsB, int columnsB)
+Matrix multMatrix(Matrix A, Matrix B)
 {
-	if (columnsA !=columnsB)
+	if (A.columns != B.rows)
 	{
 		throw "Multiplication: wrang matrix size";
 	}
-
-
-
-	double** C = zeros(rowsA, columnsB);
-	for (int rowA = 0; rowA < rowsA; ++rowA)
+	Matrix C = zeros(A.rows, B.columns);
+	for (int rowA = 0; rowA < A.rows; ++rowA)
 	{
-		for (int colB = 0; colB < columnsB; ++colB)
+		for (int colB = 0; colB < B.columns; ++colB)
 		{
-			for (int k = 0; k < columnsA; ++k)
+			for (int k = 0; k < A.columns; ++k)
 			{
-				C[rowA][colB] += A[rowA][k] * B[k][colB];
+				C.data[rowA][colB] += A.data[rowA][k] * B.data[k][colB];
 			}
 		}
 	}
 	return C;
 }
 
-double** transpose(double** A, int rows, int columns)
+Matrix transpose(Matrix A)
 {
-	double** B = createMatrix(columns, rows);
-	for (int row = 0; row < rows; ++row)
+	Matrix B = createMatrix(A.columns, A.rows);
+	for (int row = 0; row < A.rows; ++row)
 	{
-		for (int col = 0; col < columns; ++col)
+		for (int col = 0; col < A.columns; ++col)
 		{
-			B[col][row] = A[row][col];
+			B.data[col][row] = A.data[row][col];
 		}
 	}
 	return B;
 }
-	void saveMatrix(const char *fname, double** A, int rows, int columns)
+	void saveMatrix(const char *fname, Matrix A)
 	{
 		std::ofstream outFile(fname);
 		if (!outFile)
 		{
 			throw "Can not write to file";
 		}
-		outFile << rows << " " << columns << std::endl;
+		outFile << A.rows << " " << A.columns << std::endl;
 
-		for (int row = 0; row < rows; ++row)
+		for (int row = 0; row < A.rows; ++row)
 		{
-			for (int col = 0; col < columns; ++col)
+			for (int col = 0; col < A.columns; ++col)
 			{
-				outFile << A[row][col] << " ";
+				outFile << A.data[row][col] << " ";
 			}
 			outFile << std::endl;
 		}
 
 		outFile.close();
 	}
+
+	double& minMatrix(const Matrix& A)
+	{
+		int i = 0;
+		int j = 0;
+		for (int row = 0; row < A.rows; ++row)
+		{
+			for (int col = 0; col < A.columns; col++)
+			{
+				if (A.data[row][col] < A.data[i][j])
+				{
+					i = row;
+					j = col;
+				}
+			}
+			return A.data[i][j];
+		}
+	
+
+	}
+
+	Matrix horzcat(const Matrix& A, const Matrix& B)
+	{
+		if (A.rows != B.rows)
+		{
+			throw "Horzcat: wrong matrix size";
+		}
+
+		Matrix C = createMatrix(A.rows, A.columns + B.columns);
+		for (int row = 0; row < A.rows; row++)
+		{
+			for (int col = 0; col < A.columns; col++)
+			{
+				C.data[row][col] = A.data[row][col];
+			}
+		}
+
+		for (int row = 0; row < B.rows; row++)
+		{
+			for (int col = 0; col < B.columns; col++)
+			{
+				C.data[row][col + A.columns] = B.data[row][col];
+			}
+		}
+		return C;
+	}
+	
+
+
