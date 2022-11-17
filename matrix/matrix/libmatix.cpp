@@ -60,6 +60,20 @@ void printMatrix(const Matrix & M, const char* str)
 		std::cout << std::endl;
 	}
 }
+void matrix2tex(const Matrix & M)
+{
+	std::cout << "\\left (\\begin{matrix}" << std::endl;
+	for (int row = 0; row < M.rows; ++row)
+	{
+		std::cout << M.data[row][0];
+		for (int col = 1; col < M.columns; ++col)
+		{
+			std::cout << " & " << M.data[row][col];
+		}
+		std::cout << "\\\\" << std::endl;
+	}
+	std::cout << "\\end{matrix} \\right)"<< std::endl;
+}
 
 Matrix zeros(int rows, int columns)
 {
@@ -204,6 +218,29 @@ Matrix transpose(Matrix A)
 		}
 
 		outFile.close();
+	}
+
+	Matrix loadMatrix(const char* fname)
+	{
+		std::ifstream inFile(fname);
+		if (!inFile)
+		{
+			throw "Can not read file";
+		}
+		int rows, int columns;
+		inFile >> rows >> columns;
+		Matrix M = createMatrix(rows, columns);
+		for (int row=0; row < rows; ++row)
+		{
+			for (int col = 0; col < columns; ++col)
+			{
+				inFile >> M.data[row][columns];
+			}
+		}
+		inFile.close();
+		return M;
+
+
 	}
 
 	double& minMatrix(const Matrix& A)

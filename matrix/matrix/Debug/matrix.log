@@ -1,3 +1,6 @@
 ﻿  libmatix.cpp
-c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(227): warning C4715: 'minMatrix': not all control paths return a value
-  matrix.vcxproj -> C:\Users\st107226\source\repos\matrix\Debug\matrix.exe
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(230): error C2062: type 'int' unexpected
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(231): error C2065: 'columns': undeclared identifier
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(232): error C2065: 'columns': undeclared identifier
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(235): error C2065: 'columns': undeclared identifier
+c:\users\st107226\source\repos\matrix\matrix\libmatix.cpp(237): error C2065: 'columns': undeclared identifier

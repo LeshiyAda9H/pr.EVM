@@ -13,6 +13,7 @@ Matrix createMatrix(int rows, int columns);
 void deleteMatrix(Matrix & M);
 void inputMatrix(Matrix M);
 void printMatrix(const Matrix & M, const char* str);
+void matrix2tex(const Matrix & M);
 
 
 Matrix zeros(int rows, int columns);
@@ -26,10 +27,15 @@ Matrix multMatrix(Matrix A, Matrix B);
 
 Matrix transpose(Matrix A);
 
+
 void saveMatrix(const char *fname, Matrix A);
+
+Matrix loadMatrix(const char* fname);
 
 double& minMatrix(const Matrix& A);
 Matrix horzcat(const Matrix& A, const Matrix& B);
+
+
 
 
 #endif
