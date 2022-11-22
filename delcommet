@@ -1,0 +1,161 @@
+//#define _CRT_SECURE_NO_WARNINGS
+#include "stdafx.h"
+
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+int main(int argc, char* argv[])
+{
+	char inputFileName[256];
+	if (argc > 1)
+	{
+		strcpy_s(inputFileName, argv[1]); //!!!!!!!!!!!!!!!
+	}
+	else {
+		std::cout << "Input filename: ";
+		std::cin.getline(inputFileName, 256);
+	}
+
+	//const char inputFileName[] = "readme.txt";
+	//const char outputFileName[] = "output.txt";
+
+	std::ifstream inFile(inputFileName);
+	if (!inFile)
+	{
+		std::cerr << "Can not open file " << inputFileName << std::endl;
+		return 1;
+	}
+
+	char outputFileName[256];
+	if (argc > 2) {
+		strcpy_s(outputFileName, argv[2]);
+	}
+	else {
+		std::cout << "Output filename [output.txt]: ";
+		std::cin.getline(outputFileName, 256);
+		if (strlen(outputFileName) == 0) {
+			strcpy_s(outputFileName, "output.txt");
+		}
+	}
+
+	std::ofstream outFile(outputFileName);
+
+
+	if (!inFile)
+	{
+		std::cerr << "Can not open file " << outputFileName << std::endl;
+		inFile.close();
+		return 2;
+	}
+
+	int ch,prev;
+	prev = inFile.get();
+
+	while ((ch = inFile.get()) != EOF)
+	{
+		/* Основная часть программы*/
+		if (ch == '/' && prev == '/')
+		{
+			//Однострочный комментарий
+			do {
+				ch = inFile.get();
+			} while (ch != '\n' && ch != EOF);
+			prev = ch;
+			
+		}
+		else if (ch == '*' && prev == '/')
+		{
+			//Многострочный комментарий
+			prev = inFile.get();
+			ch = inFile.get();
+			while (ch != EOF && !(ch == '/' && prev == '*')) {
+				prev = ch;
+				ch = inFile.get();
+			}
+			prev = inFile.get();
+		}
+		else if (ch == '"' && (prev!='\'' && prev!='\\'))
+		{
+			//Начало строки
+			outFile.put(prev);
+			outFile.put(ch);
+			prev = 0;
+			ch = inFile.get();
+			int action = 0;
+			do {
+				if (prev == '\\') {
+					action = 1;
+
+				}
+				else if (prev == 0) {
+					if (ch == '\\') action = 2;
+					else if (ch == '"') action = 3;
+					else action = 4;
+				}
+				else {
+					if (ch == '\\') action = 5;
+						else if (ch == '"') action = 3;
+						else action = 4;
+				}
+
+				switch (action) {
+				case 1:
+					outFile.put(prev);
+					outFile.put(ch);
+					prev = 0;
+					ch = inFile.get();
+					break;
+				case 2:
+					outFile.put(ch);
+					ch = inFile.get();
+					outFile.put(ch);
+					ch = inFile.get();
+					break;
+				case 3:
+					prev = ch;
+					break;
+				case 4:
+					outFile.put(ch);
+					prev = ch;
+					ch = inFile.get();
+					break;
+				case 5:
+					prev = ch;
+					ch = inFile.get();
+					break;
+				}
+
+			} while (ch != EOF && ch!='"');
+			/*
+			do {
+				outFile.put(ch);
+				prev = ch;
+				ch = inFile.get();
+				if (prev == '\\') {
+					outFile.put(prev);
+					prev = inFile.get();
+					ch = inFile.get();
+				}
+			} while ((ch != EOF) && (ch != '"'));
+			prev = ch;
+			*/
+		}
+		else {
+			//Остальные случаи
+			outFile.put(prev);
+			prev = ch;
+		}
+	}
+	if (prev != EOF) {
+		outFile.put(prev);
+	}
+
+	inFile.close();
+	outFile.close();
+
+	return 0;
+}
+
+
+
