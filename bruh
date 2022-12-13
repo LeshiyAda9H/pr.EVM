@@ -1,0 +1,27 @@
+#include <iostream>
+int decimal(int number, int ss) {
+	while (number > 0) {
+		if (number % ss != 0) {
+			std::cout << ss-1 << std::endl;
+		}
+		else {
+			std::cout << 0 << std::endl;
+		}
+		number /= ss;
+	}
+	return ss;
+}
+
+
+int main()
+{
+	int number = 0;
+	int ss = 0;
+	std::cin >> number >> ss;
+
+	if (1<ss or ss<= 10) {
+		decimal(number, ss);
+	}
+
+    return 0;
+}
