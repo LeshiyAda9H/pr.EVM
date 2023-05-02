@@ -1,0 +1,152 @@
+#include "stdafx.h"
+
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <algorithm>
+
+
+class block {
+public:
+	int type;
+	std::vector<double> args;
+	block(int ch) : type(ch) {};
+	double eval() {
+		double result = 0;
+		switch (type){
+		case '+':
+			std::for_each(args.begin(), args.end(), [&result](double elem) {result += elem; });
+			break;
+		case '-':
+			result = *args.begin();
+			std::for_each(++(args.begin()), args.end(), [&result](double elem) {result -= elem; });
+			break;
+		case '*':
+			result = 1.;
+			std::for_each(args.begin(), args.end(), [&result](double elem) {result *= elem; });
+			break;
+		default:
+			throw "eval() error";
+		}
+		return result;
+	}
+};
+
+int GetColNumber(char ch) {
+	if (ch == '(' ){
+	return 0;
+	}
+	else if (ch == ')' ){
+	return 2;
+	}
+	else if (ch == '\0') {
+		return 3;
+	}
+	else if (ch == '\t' || ch == ' ' ){
+		return 4;
+	}
+	return 1;
+}
+
+double eval(const char* str) {
+	std::stack <block*> Stack;
+	int row = 0, col = 0;
+	int index = 0;
+	int actions[][5] = { {1,2,2,5,7},{1,4,3,6,7} };
+	int action = 0;
+	double value;
+	block *tmp;
+	int result = 0;
+	
+	try {
+		do {
+			col = GetColNumber(str[index]);
+			if (col == 1) {
+				value = 0;
+				while (str[index] >= '0' && str[index] <= '9') {
+					value = value * 10 + (str[index] - '0');
+					++index;
+				}
+				--index;
+			}
+			row = Stack.empty() ? 0 : 1;
+			action = actions[row][col];
+			switch (action) {
+			case 1:
+				++index;
+				Stack.push(new block(str[index]));
+				break;
+			case 2:
+				throw "Error. There is any operator";
+				break;
+			case 3:
+				tmp = Stack.top();
+				Stack.pop();
+				value = tmp->eval();
+				delete tmp;
+
+				if (Stack.empty()) {
+					Stack.push(new block('='));
+				}
+				Stack.top()->args.push_back(value);
+				break;
+			case 4:
+				Stack.top()->args.push_back(value);
+				break;
+			case 5:
+				return 0;
+				break;
+			case 6:
+				if (Stack.size() == 1) {
+					tmp = Stack.top();
+					if (tmp->type == '=') {
+						if (tmp->args.size() == 1) {
+							result = tmp->args[0];
+							delete tmp;
+						}
+						else {
+							throw "Error. To many values";
+						}
+					}
+					else {
+						throw "Error. Last operator is not eq";
+					}
+				}
+				else {
+					throw "Error";
+				}
+				break;
+			case 7: // Skip whitespace symbol
+				break;
+			}
+			++index;
+		} while (action != 6);
+	}
+	catch (...) {
+		while (!Stack.empty()) {
+			delete Stack.top();
+			Stack.pop();
+		}
+		throw;
+	}
+
+	return result;
+}
+
+int main()
+{
+	char formula[] = "(* (+ 1 2) (- 6 9))";
+
+	try {
+		double result = eval(formula);
+		std::cout << "result = " << result;
+	}
+	catch (const char* error) {
+		std::cout << error << std::endl;
+	}
+	catch (...) {
+		std::cout << "Unknown error";
+	}
+	return 0;
+}
+
